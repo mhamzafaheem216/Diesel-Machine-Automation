@@ -24,29 +24,39 @@ def parse_serial_data(raw_data):
         db.insert_transaction(card_id, float(liters_used))
         db.update_card_balance(card_id, float(liters_left))
 
+    else:
+        print(f"Unrecognized format: {raw_data}")
+
 def start_serial_reading():
-    # Use serial_for_url so loop:// works
-    ser = serial.serial_for_url(SERIAL_PORT, BAUD_RATE, timeout=1)
-    print(f"Listening on {SERIAL_PORT}...")
+    try:
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        print(f"Listening on {SERIAL_PORT} at {BAUD_RATE} baud...")
 
-    # Simulated test data
-    test_data = [
-        "C#12l345-100.00L\n",
-        "Card:12345 Sale:5.00L Bal:95.00L\n",
-        "Card:67890 Sale:10.00L Bal:90.00L\n"
-    ]
+        # Simulated test data (for debugging only)
+        # test_data = [
+        #     "C#12345-100.00L\n",
+        #     "Card:12345 Sale:5.00L Bal:95.00L\n",
+        #     "Card:67890 Sale:10.00L Bal:90.00L\n"
+        # ]
+        #
+        # for line in test_data:
+        #     ser.write(line.encode())
+        #     time.sleep(0.5)
 
-    # Send test data into the loop
-    for line in test_data:
-        ser.write(line.encode())
-        time.sleep(0.5)
+        while True:
+            line = ser.readline().decode("utf-8").strip()
+            if line:
+                print(f"Received: {line}")
+                parse_serial_data(line)
 
-    # Read from the same port
-    while True:
-        line = ser.readline().decode("utf-8").strip()
-        if line:
-            print(f"Received: {line}")
-            parse_serial_data(line)
+    except serial.SerialException as e:
+        print(f"Serial port error: {e}")
+    except KeyboardInterrupt:
+        print("Stopped by user.")
+    finally:
+        if 'ser' in locals() and ser.is_open:
+            ser.close()
+            print("Serial port closed.")
 
 if __name__ == "__main__":
     start_serial_reading()
