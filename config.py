@@ -1,9 +1,9 @@
 
 
 # Serial port settings
-SERIAL_PORT = "COM3" 
+SERIAL_PORT = "COM6" 
 # SERIAL_PORT = "loop://"
-BAUD_RATE = 9600
+BAUD_RATE = 115200
 
 # Database settings
 DB_CONFIG = {
