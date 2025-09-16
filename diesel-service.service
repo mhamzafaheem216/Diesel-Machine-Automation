@@ -1,0 +1,18 @@
+[Unit]
+Description=Diesel Automation Service
+After=network.target
+
+[Service]
+Type=simple
+User=diesel
+Group=diesel
+WorkingDirectory=/opt/diesel-service
+ExecStart=/opt/diesel-service/diesel-service
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=diesel-service
+
+[Install]
+WantedBy=multi-user.target
